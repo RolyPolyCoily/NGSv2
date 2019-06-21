@@ -33,5 +33,7 @@
   - インデックス作成
     - ```../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
 - 発現量定量
-
-
+  - STAR解析結果が保管されているディレクトリに移動
+    - ```cd ~/Documents/expression/STAR```  
+  - 発現量定量
+    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do ../tools/RSEM-1.3.1/rsem-calculate-expression --num-threads 4 --paired-end --bam ${sample}Aligned.toTranscriptome.out.bam ../ref/RSEM_reference/RSEM_reference ${sample}; done```  
