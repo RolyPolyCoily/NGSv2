@@ -18,5 +18,7 @@
   - マッピングしたファイルを保管するディレクトリを作成  
     - ```mkdir -p ~/Documents/expression/STAR```  
     - ```cd ~/Documents/expression/STAR```  
-  - １サンプル分のマッピング（SRR\**\**\**\*\には）
+  - １サンプル分のマッピング（SRR\*\*\*\*\*\*\*には実在するSRR IDを記入する）
     - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR1550989 --quantMode TranscriptomeSAM```  
+  - 多サンプルのマッピング
+    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do echo mapping:${sample}; ../tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c  --readFilesIn ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --quantMode TranscriptomeSAM --outFileNamePrefix ${sample};done; echo finished```  
