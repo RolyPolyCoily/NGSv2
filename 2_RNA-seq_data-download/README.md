@@ -6,7 +6,10 @@
   - ```cat SraRunTable.txt```  
   - ```head -n1 SraRunTable.txt```  
   - ```cut -f5,8,10,12,14,16 SraRunTable.txt```  
-- run ID のみを抜き出して別ファイルに保存する
+- run ID のみを抜き出して別ファイルに保存する  
   - ```tail -n+2 SraRunTable.txt | cut -f5 > run_ids```  
-- RNA-seqデータのダウンロード
-  - __fasterq-dumpを使うように原稿も変更する__
+- RNA-seqデータのダウンロード  
+  - __fasterq-dumpを使うように原稿も変更する__  
+- ダウンロードしたファイルを一覧  
+ -  ```ls -lh *fastq.gz```  
+ - ```ls -lh *fastq.gz | wc -l```  
