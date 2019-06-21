@@ -1,0 +1,12 @@
+# RNA-seqデータの取得・変換  
+- fastqファイルを保存するディレクトリを作成  
+  - ```mkdir ~/Documents/expression/seq```  
+  - ```cd ~/Documents/expression/seq```  
+- SraRunTable.txtをダウンロードしたのち、内容を確認  
+  - ```cat SraRunTable.txt```  
+  - ```head -n1 SraRunTable.txt```  
+  - ```cut -f5,8,10,12,14,16 SraRunTable.txt```  
+- run ID のみを抜き出して別ファイルに保存する
+  - ```tail -n+2 SraRunTable.txt | cut -f5 > run_ids```  
+- RNA-seqデータのダウンロード
+  - __fasterq-dumpを使うように原稿も変更する__
