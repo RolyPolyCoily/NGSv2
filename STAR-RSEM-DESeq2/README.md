@@ -14,3 +14,9 @@
     - ```mkdir ~/Docume nts/expression/ref/STAR_reference```  
   - インデックス作成  
     - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode genomeGenerate --genomeDir ~/Documents/expression/ref/STAR_reference --genomeFastaFiles ~/Documents/expression/ref/Homo_sapiens.GRCh38.dna.primary_assembly.fa --sjdbGTFfile ~/Documents/expression/ref/Homo_sapiens.GRCh38.95.gtf```  
+- マッピング  
+  - マッピングしたファイルを保管するディレクトリを作成  
+    - ```mkdir -p ~/Documents/expression/STAR```  
+    - ```cd ~/Documents/expression/STAR```  
+  - １サンプル分のマッピング（SRR\**\**\**\*\には）
+    - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR1550989 --quantMode TranscriptomeSAM```  
