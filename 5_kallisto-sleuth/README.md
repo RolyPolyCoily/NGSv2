@@ -23,27 +23,81 @@
   - 全サンプルの出力結果を確認するためには以下のコマンドを実行する  
     - ```find ~/Documents/expression/kallisto -type f```  
 ## Sleuth
-    - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode genomeGenerate --genomeDir ~/Documents/expression/ref/STAR_reference --genomeFastaFiles ~/Documents/expression/ref/Homo_sapiens.GRCh38.dna.primary_assembly.fa --sjdbGTFfile ~/Documents/expression/ref/Homo_sapiens.GRCh38.95.gtf```  
-- マッピング  
-  - マッピングしたファイルを保管するディレクトリを作成  
-    - ```mkdir -p ~/Documents/expression/STAR```  
-    - ```cd ~/Documents/expression/STAR```  
-  - １サンプル分のマッピング（SRR\*\*\*\*\*\*\*には実在するSRR IDを記入する）
-    - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR1550989 --quantMode TranscriptomeSAM```  
-  - 多サンプルのマッピング
-    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do echo mapping:${sample}; ../tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c  --readFilesIn ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --quantMode TranscriptomeSAM --outFileNamePrefix ${sample};done; echo finished```  
-## RSEM
-- source codeを ~/Documents/expression/tools にダウンロードしたのちファイルを解凍
-  - ```cd ~/Documents/expression/tools```  
-  - ```tar -zxvf RSEM-1.3.1.tar.gz```  
-- インデックスの作成  
-  - インデックス保存用のディレクトリを作成  
-    - ```mkdir ~/Documents/expression/ref/RSEM_reference```  
-    - ```cd ~/Documents/expression/ref/RSEM_reference```  
-  - インデックス作成
-    - ```../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
-- 発現量定量
-  - STAR解析結果が保管されているディレクトリに移動
-    - ```cd ~/Documents/expression/STAR```  
-  - 発現量定量
-    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do ../tools/RSEM-1.3.1/rsem-calculate-expression --num-threads 4 --paired-end --bam ${sample}Aligned.toTranscriptome.out.bam ../ref/RSEM_reference/RSEM_reference ${sample}; done```  
+- kallistoの作業と同じく sleuth も ~/Documents/expression/kallisto で作業する  
+  - ```cd ~/Documents/expression/kallisto```  
+- サンプル名（例：SRR1550986）・コンディション（例：case/control）・kallistoで出力されたディレクトリのパス（~/Documents/expression/kallisto/SRR1550986）を含むテキストファイルを作成  
+  - ヘッダー部分を書き出しておく  
+    - ```echo -e "sample\tcondition\tpath" > sample.txt```  
+  - 必要な情報（サンプル名とコンディション情報）が含まれる項目を探す  
+    - ```head -n1 ../seq/SraRunTable.txt```  
+  - 筆者のデータでは５項目目にサンプル名、12項目目にコンディション情報が含まれていたので、それらを抜き出して上記のヘッダーに書き足す
+    - ```awk 'BEGIN{FS="\t";OFS="\t"}{print $5,$12,$5}' <(tail -n+2 ../seq/SraRunTable.txt) >> sample.txt```  
+- Rの起動  
+  - ```R```  
+### 以下R環境下での作業
+- sleuthのインストール  
+  - ```source("http://bioconductor.org/biocLite.R")```  
+  - ```biocLite("rhdf5")```  
+  - ```install.packages("devtools")```  
+  - ```devtools::install_github("pachterlab/sleuth")```  
+- sleuthパッケージの読み込み  
+  - ```library("sleuth")```  
+- サンプル情報を読み込む  
+  - ```s2c <- read.table("sample.txt", header=T, stringsAsFactors=F, sep="\t")```  
+  - ```s2c$condition <- gsub(" ","_",s2c$condition)```  
+- 表示させて内容を確認する  
+  - ```s2c```  
+- 遺伝子IDと遺伝子名の対応表を読み込む  
+  - ```t2g <- read.table("../ref/target2gene.txt", header=T, stringsAsFactors=F)```  
+- kallisto の出力ファイルを読み込む  
+  - isoform-level でデータを読み込む場合は以下  
+    - ```so <- sleuth_prep(s2c, extra_bootstrap_summary=T, target_mapping=t2g)```  
+  - gene-levelでデータを読み込む場合は以下  
+    - ```so <- sleuth_prep(s2c, extra_bootstrap_summary=T, target_mapping=t2g, aggregation_column='ens_gene', gene_mode=T)```  
+- kallisto の結果を眺める（先頭の20行のみ）  
+  - ```head(kallisto_table(so), 20)```  
+- 遺伝子IDに対応する遺伝子名を付与する  
+  - ```kallisto.df <- kallisto_table(so)```  
+  - ```kallisto.df$target_id2 <- sub("\\..*","",kallisto.df$target_id)```  
+  - ```kallisto.df <- merge(kallisto.df,t2g, by.x="target_id2", by.y="target_id") # 遺伝子レベルで解析する場合は最後をby.y="ens_gene"に変更する```  
+- 今回は使わないが、このデータは別の解析などにも活用できるので保存しておく  
+  - ```write.table(kallisto.df, "kallisto_res.txt", row.names=F, quote=F)```  
+- 尤度比検定（Log-likelihood ratio test; LRT）  
+  - ```so <- sleuth_fit(so, ~condition, 'full')```  
+  - ```LRT <- sleuth_fit(so, ~1, 'reduced')```  
+  - ```LRT <- sleuth_lrt(LRT, 'reduced', 'full')```  
+  - ```LRT_table <- sleuth_results(LRT, 'reduced:full', 'lrt', show_all=F)```  
+  - 尤度比検定結果を眺める（先頭10行のみ）  
+    - ```head(LRT_table, 10)```  
+  - 発現量をボックスプロットおよびヒートマップで図示する  
+    - ```library(ggplot2)```  
+    - ```p <- plot_bootstrap(LRT, "ENST00000503567.5", units="est_counts", color_by="condition")```  
+  - 図を表示させる  
+    - ```p```  
+  - 図を保存する  
+    - ```ggplot2::ggsave("ENST00000503567.5.png", p)```  
+    - 拡張子を .pdf や .eps にすることでファイル形式を選択できる  
+    - width や height で画像サイズも指定できる  
+  - 作図に使われている生データは下記で抜き出すことができる  
+    - ```data <- as.data.frame(LRT$bs_quants)```  
+    - ```head(data)```  
+    - 箱ひげ図の棒の上下端が max/min、箱の上下が upper/lower、箱内の横線が midに対応している。このデータを用いてggplot2などで作図できる
+  - ヒートマップ（p値の低い20遺伝子で作図する）  
+    - 上記のコマンドですでにp値の低い順に並べ替えてあるので、上から順に20個の遺伝子IDを指定する  
+    - ```transcripts <- LRT_table$target_id[1:20]```  
+    - ヒートマップはgtableオブジェクトのためggsave()は使えず、直接書き出す必要がある  
+    - ```pdf('heatmap.pdf') # ここではPDF形式で保存してみる```  
+    - ```plot_transcript_heatmap(LRT, transcripts, units="tpm")```  
+    - ```dev.off()```  
+- Wald検定（WT）  
+  - ```WT <- sleuth_wt(so, 'conditionType_1_Diabetes') # conditionに続けて群の名前を記述する。適切な名前でない場合はエラーメッセージとともに適切な名前が示唆されるので、それを用いたコマンドを再実行するとよい```  
+  - ```WT_table <- sleuth_results(WT, 'conditionType_1_Diabetes')```  
+  - q値の小さい順に並べ替える  
+    - ```WT_table <- WT_table[order(WT_table$qval),]```  
+  - 結果を保存する  
+    - ```write.table(WT_table, "WT_res.sorted.txt", row.names=F, quote=F, sep="\t")```  
+  - Volcanoプロットで作図  
+    - ```p3 <- plot_volcano(WT, 'conditionType_1_Diabetes', 'wt')```  
+    - ```ggsave("volcanoplot.png", p3)```  
+    - volcano plot 作図用のデータは WT_table にも含まれているので、ggplot2などを使って自分で作図することができる  
+
