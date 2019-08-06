@@ -48,4 +48,68 @@
   - isoform-levelの解析を行う場合は上記コマンドのgenes.resultsをisoforms.resultsに書き換える  
 - Rの起動  
   - ```R```  
-- DESeq2のインストール
+### 以下R環境下での作業  
+- DESeq2/tximportのインストール・読み込み  
+  - ```install.packages("BiocManager") # 最初にミラーサイトの選択が求められる。どこを選択しても問題ないが、一般的には地理的に近い場所を選ぶ```  
+  - ```BiocManager::install("DESeq2")```  
+  - ```BiocManager::install("tximport")```  
+  - ```library(DESeq2)```  
+  - ```library(tximport) # 警告は無視する```  
+- サンプル情報を記載したリストを読み込む  
+  - ```s2c <- read.table("sample2condition.txt", header=T, sep="\t", stringsAsFactors=F)```  
+  - ```s2c <- s2c[,c("sample", "group", "path")]```  
+  - ```s2c$group <- gsub(" ", "_", s2c$group) # スペースが含まれていることがあるので置換する```  
+- RSEMの出力ファイルの読み込み  
+  - ```files <- s2c$path```  
+  - ```names(files) <- s2c$sample```  
+- gene-levelの解析では以下コマンド  
+  - ```txi <- tximport(files, type="rsem", txIn=F, txOut=F)```  
+- isoform-levelの解析では以下コマンド  
+  - ```txi <- tximport(files, type="rsem", txIn=T, txOut=T)```  
+- length=0を1に置換  
+  - ```txi$length[txi$length==0] <- 1```  
+- サンプル情報を読み込む  
+  - ```sampleTable <- data.frame(condition=s2c$group)```  
+  - ```rownames(sampleTable) <- colnames(txi$counts)```  
+  - ```dds <- DESeqDataSetFromTximport(txi, sampleTable, ~condition)```  
+- Wald検定（wt）  
+  - ```dds_wt <- DESeq(dds)```  
+  - ```res_wt <- results(dds_wt)```  
+  - ```res_wt_naomit <- na.omit(res_wt) # NA を除外```  
+- 尤度比検定（lrt）  
+  - ```dds_lrt <- DESeq(dds, test="LRT", reduced=~1)```  
+  - ```res_lrt <- results(dds_lrt)```  
+  - ```res_lrt_naomit <- na.omit(res_lrt)```  
+- 解析結果を表示・保存する（下記はWald検定の結果を扱う場合の例。尤度比検定の結果を用いる場合は res_wt_naomit を res_lrt_naomit に変更する）  
+  - 遺伝子名の付与（アノテーション）  
+    - ```t2g <- read.table("../ref/target2gene.txt",header=T,stringsAsFactors=F)```  
+    - ```res_wt_naomit$ens_gene <- row.names(res_wt_naomit)```  
+    - ```res_wt_naomit_annot <- merge(as.data.frame(res_wt_naomit), unique(t2g[,2:3]), by="ens_gene")```  
+  - 発現変動のある転写産物を補正済みp値の低い順に並べる  
+    - ```res_wt_naomit_annot_sort <- res_wt_naomit_annot[order(res_wt_naomit_annot$padj),]```  
+  - 発現変動の大きな遺伝子、上位20個を表示させる（補正済みp値の低い20遺伝子）  
+    - ```head(res_wt_naomit_annot_sort, 20)```  
+  - 各カラムの説明は下記コマンドで表示させる  
+    - ```mcols(res_wt_naomit)```  
+  - データフレームの保存  
+    - ```write.table(res_wt_naomit_annot_sort, "Wald-test.result.txt", sep="\t", quote=F, row.names=F)```  
+- 作図（MA-plot）  
+  - 作図・表示させるコマンド  
+    - ```plotMA(res_wt, ylim=c(-2, 2))```  
+  - 保存する  
+    - ```png("MAplot.png") # EPS形式にしたい場合はpostscript("MAplot.eps")を使う```  
+    - ```plotMA(res_wt, ylim=c(-10, 10))```  
+    - ```dev.off()```  
+- 特定の遺伝子の発現量（count）を示すプロットを作図  
+  - 発現変動の大きな遺伝子を表示させる  
+    - ```head(res_wt_naomit_annot_sort)```  
+    - FASN (ENSG00000169710) という遺伝子の発現変動が大きかったので、この発現量をプロットする  
+  - 発現量を図示する  
+    - ```plotCounts(dds, gene="ENSG00000169710", intgroup="condition")```  
+  - 保存する際はMA-plotと同様
+    - ```png("ENSG00000169710.png")```  
+    - ```plotCounts(dds, gene="ENSG00000169710", intgroup="condition")```  
+    - ```dev.off()```  
+  - 自前で作図するためにデータのみを抽出したい場合は returnData=T を加える  
+    - ```d <- plotCounts(dds, gene="ENSG00000169710", intgroup="condition", returnData=T)```  
+
