@@ -22,18 +22,30 @@
     - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR1550989 --quantMode TranscriptomeSAM```  
   - 多サンプルのマッピング
     - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do echo mapping:${sample}; ../tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c  --readFilesIn ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --quantMode TranscriptomeSAM --outFileNamePrefix ${sample};done; echo finished```  
-## RSEM
-- source codeを ~/Documents/expression/tools にダウンロードしたのちファイルを解凍
+## RSEM  
+- source codeを ~/Documents/expression/tools にダウンロードしたのちファイルを解凍  
   - ```cd ~/Documents/expression/tools```  
   - ```tar -zxvf RSEM-1.3.1.tar.gz```  
 - インデックスの作成  
   - インデックス保存用のディレクトリを作成  
     - ```mkdir ~/Documents/expression/ref/RSEM_reference```  
     - ```cd ~/Documents/expression/ref/RSEM_reference```  
-  - インデックス作成
+  - インデックス作成  
     - ```../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
-- 発現量定量
-  - STAR解析結果が保管されているディレクトリに移動
+- 発現量定量  
+  - STAR解析結果が保管されているディレクトリに移動  
     - ```cd ~/Documents/expression/STAR```  
-  - 発現量定量
+  - 発現量定量  
     - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do ../tools/RSEM-1.3.1/rsem-calculate-expression --num-threads 4 --paired-end --bam ${sample}Aligned.toTranscriptome.out.bam ../ref/RSEM_reference/RSEM_reference ${sample}; done```  
+    - ../ref/RSEM_reference/rsem_reference でRSEMのリファレンス用インデックスファイルを指定している。STARとは異なり、ディレクトリ名を入れるだけではなく、ディレクトリ内のファイル名（拡張子を除く）まで指定する必要がある。  
+## DESeq2  
+- この処理もSTAR、RSEMの結果が保存されているディレクトリで実施する  
+  - ```cd ~/Documents/expression/STAR```  
+- RSEMで出力したファイルがどのサンプルに対応するのか、各サンプルはどの群（例：case、control）に属するのかを記述したファイルを準備する。RNA-seqデータをSRAからダウンロードした場合は、あわせてSraRunTable.txtをダウンロードしているので、それを使う。  
+  - ```echo -e "sample\tgroup\tpath" > sample2condition.txt # ヘッダーを作成```  
+  - サンプル名はRun、群はdiseasestatusの項目、パスはSRR IDに.genes.resultsを足したものなので、それらを記述したファイルを作成する。  
+    - ```tail -n+2 ../seq/SraRunTable.txt | awk 'BEGIN{FS="\t";OFS="\t"}{print $5,$12,$5".genes.results"}' >> sample2condition.txt```  
+  - isoform-levelの解析を行う場合は上記コマンドのgenes.resultsをisoforms.resultsに書き換える  
+- Rの起動  
+  - ```R```  
+- DESeq2のインストール
