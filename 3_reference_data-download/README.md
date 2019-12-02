@@ -1,14 +1,7 @@
 # リファレンスデータのダウンロード  
 ## リファレンスシークエンスデータのダウンロード（STARを使う場合）
-- Ensemblのデータベースにアクセス  
-  - ```lftp ftp.ensembl.org/pub/release-95/fasta```  
-- データの一覧表示  
-  - ```ls```  
-- ヒトのデータにアクセス  
-  - ```cd homo_sapiens/dna```  
-  - ```ls```  
-- lftpを終了
-  - ```exit```  
+- lftpのインストール  
+  - ```brew install lftp```  
 - リファレンスデータを保存するディレクトリを作成  
   - ```mkdir -p ~/Documents/expression/ref```  
   - ```cd ~/Documents/expression/ref```  
