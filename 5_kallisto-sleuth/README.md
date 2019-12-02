@@ -28,7 +28,7 @@
 - サンプル情報が記載されたファイルを作成する
   - ```R```  
 ### 以下R環境下での作業  
-- ```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)``` 
+- ```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)```  
 - ```df2 <- data.frame(sample=df$Run, group=df$diseasestatus, path=df$Run)```  
 - ```write.table(df2, "sample2condition.txt" ,row.names=F, quote=F, sep="\t")```  
 - ```q()```  
