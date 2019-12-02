@@ -2,14 +2,9 @@
 - fastqファイルを保存するディレクトリを作成  
   - ```mkdir ~/Documents/expression/seq```  
   - ```cd ~/Documents/expression/seq```  
-- SraRunTable.txtをダウンロードしたのち、内容を確認  
-  - ```cat SraRunTable.txt```  
-  - ```head -n1 SraRunTable.txt```  
-  - ```cut -f5,8,10,12,14,16 SraRunTable.txt```  
-- run ID のみを抜き出して別ファイルに保存する  
-  - ```tail -n+2 SraRunTable.txt | cut -f5 > run_ids```  
-- RNA-seqデータのダウンロード  
-  - __fasterq-dumpを使うように原稿も変更する__  
+- Runinfo Table と Accession List を上記ディレクトリにダウンロード  
+- fasterq-dumpを用いてRNA-seqデータをダウンロード  
+  - ```cat SRR_Acc_List.txt | while read line; do cmd="fasterq-dupm --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done```  
 - ダウンロードしたファイルを一覧  
  -  ```ls -lh *fastq.gz```  
  - ```ls -lh *fastq.gz | wc -l```  
