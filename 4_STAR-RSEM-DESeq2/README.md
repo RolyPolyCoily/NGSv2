@@ -19,9 +19,9 @@
     - ```mkdir -p ~/Documents/expression/STAR```  
     - ```cd ~/Documents/expression/STAR```  
   - １サンプル分のマッピング（SRR\*\*\*\*\*\*\*には実在するSRR IDを記入する）
-    - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR1550989 --quantMode TranscriptomeSAM```  
+    - ```~/Documents/expression/tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --outFileNamePrefix SRR******* --quantMode TranscriptomeSAM```  
   - 多サンプルのマッピング
-    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do echo mapping:${sample}; ../tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c  --readFilesIn ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --quantMode TranscriptomeSAM --outFileNamePrefix ${sample};done; echo finished```  
+    - ```for sample in `ls ../seq/*fastq.gz | xargs basename | cut -f1 -d"_" | uniq`; do echo mapping:${sample}; ../tools/STAR-2.7.0a/bin/MacOSX_x86_64/STAR --runMode alignReads --genomeDir ../ref/STAR_reference --readFilesCommand gunzip -c --readFilesIn ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz --outSAMtype BAM SortedByCoordinate --runThreadN 4 --quantMode TranscriptomeSAM --outFileNamePrefix ${sample};done; echo finished```  
 ## RSEM  
 - source codeを ~/Documents/expression/tools にダウンロードしたのちファイルを解凍  
   - ```cd ~/Documents/expression/tools```  
@@ -42,9 +42,11 @@
 - この処理もSTAR、RSEMの結果が保存されているディレクトリで実施する  
   - ```cd ~/Documents/expression/STAR```  
 - RSEMで出力したファイルがどのサンプルに対応するのか、各サンプルはどの群（例：case、control）に属するのかを記述したファイルを準備する。RNA-seqデータをSRAからダウンロードした場合は、あわせてSraRunTable.txtをダウンロードしているので、それを使う。  
-  - ```echo -e "sample\tgroup\tpath" > sample2condition.txt # ヘッダーを作成```  
-  - サンプル名はRun、群はdiseasestatusの項目、パスはSRR IDに.genes.resultsを足したものなので、それらを記述したファイルを作成する。  
-    - ```tail -n+2 ../seq/SraRunTable.txt | awk 'BEGIN{FS="\t";OFS="\t"}{print $5,$12,$5".genes.results"}' >> sample2condition.txt```  
+  - ```R # Rを用いる```  
+  - ```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)```  
+  - ```df2 <- data.frame(sample=df$Run, group=df$diseasestatus, path=paste0(df$Run, ".genes.results"))```  
+  - ```write.table(df2, "sample2condition.txt" ,row.names=F, quote=F, sep="\t")```  
+  - ```q()```    
   - isoform-levelの解析を行う場合は上記コマンドのgenes.resultsをisoforms.resultsに書き換える  
 - Rの起動  
   - ```R```  
@@ -57,7 +59,6 @@
   - ```library(tximport) # 警告は無視する```  
 - サンプル情報を記載したリストを読み込む  
   - ```s2c <- read.table("sample2condition.txt", header=T, sep="\t", stringsAsFactors=F)```  
-  - ```s2c <- s2c[,c("sample", "group", "path")]```  
   - ```s2c$group <- gsub(" ", "_", s2c$group) # スペースが含まれていることがあるので置換する```  
 - RSEMの出力ファイルの読み込み  
   - ```files <- s2c$path```  
