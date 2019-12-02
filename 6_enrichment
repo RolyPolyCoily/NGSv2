@@ -1,0 +1,4 @@
+- DESeq2で保存したファイルを使う場合（Wald検定結果のファイルの6項目目にあるp値が1e-3を下回る転写産物の遺伝子ID（1項目目）を抽出する）  
+  - ```awk '{if($6 <= 1e-3){print $1}}' Wald-test.result.txt > Wald-test.p1e-03.txt```  
+- sleuthで保存したファイルを使う場合（4項目目にあるp値が1e-5を下回る転写産物のみ）
+  - ```awk '{if($4 <= 1e-05){print $1}}' WT_res.sorted.txt > WT_res.p1e-05.txt```  
