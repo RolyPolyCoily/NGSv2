@@ -10,7 +10,7 @@
   - ```mkdir -p ~/Documents/expression/kallisto```  
   - ```cd ~/Documents/expression/kallisto```  
   - 転写産物の定量（コマンド例）  
-  - ```kallisto quant --index=../ref/kallisto.idx --output-dir=SRR******* --bootstrap-samples=100 --threads=2 ../seq/SRR*******_1.fastq.gz  ../seq/SRR*******_2.fastq.gz```  
+  - ```kallisto quant --index=../ref/kallisto.idx --output-dir=SRR******* --bootstrap-samples=100 --threads=2 ../seq/SRR*******_1.fastq.gz ../seq/SRR*******_2.fastq.gz```  
     - --index でインデックスファイルを指定  
     - インデックスファイルの名前は必要に応じて変更  
     - --output-dir では出力先のディレクトリ名を指定（あらかじめディレクトリを準備する必要はない）  
@@ -18,23 +18,24 @@
     - --threadsはスレッド数を指定  
     - --pseudobamオプションを付けるとpseudoalignmentの結果をBAMファイルとして保存することができ、別の解析ソフトに読み込ませることが可能になる  
   - 多サンプル処理する場合は下記のようにするとコマンド入力のミスを少なくできる
-    - ```cat ../seq/run_ids | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4  ../seq/${sample}_1.fastq.gz  ../seq/${sample}_2.fastq.gz; done; echo finished```  
+    - ```cat ../seq/run_ids | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished```  
     - 最後に finished と表示されれば終了  
   - 全サンプルの出力結果を確認するためには以下のコマンドを実行する  
     - ```find ~/Documents/expression/kallisto -type f```  
 ## Sleuth
 - kallistoの作業と同じく sleuth も ~/Documents/expression/kallisto で作業する  
   - ```cd ~/Documents/expression/kallisto```  
-- サンプル名（例：SRR1550986）・コンディション（例：case/control）・kallistoで出力されたディレクトリのパス（~/Documents/expression/kallisto/SRR1550986）を含むテキストファイルを作成  
-  - ヘッダー部分を書き出しておく  
-    - ```echo -e "sample\tcondition\tpath" > sample.txt```  
-  - 必要な情報（サンプル名とコンディション情報）が含まれる項目を探す  
-    - ```head -n1 ../seq/SraRunTable.txt```  
-  - 筆者のデータでは５項目目にサンプル名、12項目目にコンディション情報が含まれていたので、それらを抜き出して上記のヘッダーに書き足す
-    - ```awk 'BEGIN{FS="\t";OFS="\t"}{print $5,$12,$5}' <(tail -n+2 ../seq/SraRunTable.txt) >> sample.txt```  
-- Rの起動  
+- サンプル情報が記載されたファイルを作成する
   - ```R```  
-### 以下R環境下での作業
+### 以下R環境下での作業  
+  - ```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)```  
+  - ```df2 <- data.frame(sample=df$Run, group=df$diseasestatus, path=df$Run)```  
+  - ```write.table(df2, "sample2condition.txt" ,row.names=F, quote=F, sep="\t")```  
+  - ```q()```  
+
+- Sleuth（Rのを用いる）  
+  - ```R```  
+### 以下R環境下での作業  
 - sleuthのインストール  
   - ```source("http://bioconductor.org/biocLite.R")```  
   - ```biocLite("rhdf5")```  
