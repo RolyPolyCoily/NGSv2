@@ -3,7 +3,7 @@
   - ```mkdir ~/Documents/expression/seq```  
   - ```cd ~/Documents/expression/seq```  
 - Runinfo Table と Accession List を上記ディレクトリにダウンロード  
-- fasterq-dumpを用いてRNA-seqデータをダウンロード（タイポがありました。[Twitterにてご報告くださった方](https://twitter.com/takatoh1/status/1212744854045786120)ありがとうございました。）  
+- fasterq-dumpを用いてRNA-seqデータをダウンロード（2020/02/12 タイポがありました。[Twitterにてご報告くださった方](https://twitter.com/takatoh1/status/1212744854045786120)ありがとうございました。）  
   - ~~```cat SRR_Acc_List.txt | while read line; do cmd="fasterq-dupm --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done```~~  
   - ```cat SRR_Acc_List.txt | while read line; do cmd="fasterq-dump --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done```  
 - ダウンロードしたファイルを一覧  
