@@ -44,8 +44,8 @@
 - sleuthパッケージの読み込み  
   - ```library("sleuth")```  
 - サンプル情報を読み込む（読み込むテキストファイルの名前が誤っていました）  
-  - ```~~s2c <- read.table("sample.txt", header=T, stringsAsFactors=F, sep="\t")~~```  
-  - ```s2c <- read.table("sample2condition.txt", header=T, stringsAsFactors=F, sep="\t")```
+  - ~~```s2c <- read.table("sample.txt", header=T, stringsAsFactors=F, sep="\t")```~~  
+  - ```s2c <- read.table("sample2condition.txt", header=T, stringsAsFactors=F, sep="\t")```  
   - ```s2c$condition <- gsub(" ","_",s2c$condition)```  
 - 表示させて内容を確認する  
   - ```s2c```  
