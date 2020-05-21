@@ -39,7 +39,10 @@
 - sleuthのインストール  
   - ```source("http://bioconductor.org/biocLite.R")```  
   - ```biocLite("rhdf5")```  
-  - # 20200521 
+  - （2020/05/21追記 R3.5以上では上記２行のコマンドではインストールできません。代わりに下記を実行してください。）  
+    - ```if (!requireNamespace("BiocManager", quietly = TRUE))```  
+    - ```install.packages("BiocManager")```  
+    - ```BiocManager::install("rhdf5")```  
   - ```install.packages("devtools")```  
   - ```devtools::install_github("pachterlab/sleuth")```  
 - sleuthパッケージの読み込み  
