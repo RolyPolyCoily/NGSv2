@@ -33,7 +33,9 @@
     ~~cd ~/Documents/expression/ref/RSEM_reference~~  
     - ```cd ~/Documents/expression/ref```  
   - インデックス作成  
-    - ```../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
+  - rsem-prepare-referenceのPATHに誤りがありましたので修正します。  
+    ~~../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference~~  
+    - ```../tools/RSEM-1.3.1/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
 - 発現量定量  
   - STAR解析結果が保管されているディレクトリに移動  
     - ```cd ~/Documents/expression/STAR```  
