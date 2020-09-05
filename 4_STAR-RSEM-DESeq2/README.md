@@ -26,6 +26,8 @@
 - source codeを ~/Documents/expression/tools にダウンロードしたのちファイルを解凍  
   - ```cd ~/Documents/expression/tools```  
   - ```tar -zxvf RSEM-1.3.1.tar.gz```  
+- 本章で使うRSEMのコマンドは上記「tar」を実行すれば十分ですが、もしRSEMの他のコマンドを使う場合はさらにmakeする必要があります（下記。20200906追記）  
+  - ```make```  
 - インデックスの作成  
   - インデックス保存用のディレクトリを作成  
     - ```mkdir ~/Documents/expression/ref/RSEM_reference```  
