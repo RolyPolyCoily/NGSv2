@@ -29,7 +29,9 @@
 - インデックスの作成  
   - インデックス保存用のディレクトリを作成  
     - ```mkdir ~/Documents/expression/ref/RSEM_reference```  
-    - ```cd ~/Documents/expression/ref/RSEM_reference```  
+    - 下記コマンドの誤りをご指摘いただきましたので修正いたします。  
+    - ```~~cd ~/Documents/expression/ref/RSEM_reference~~```  
+    - ```cd ~/Documents/expression/ref```  
   - インデックス作成  
     - ```../tools/RSEM-1.3.1/bin/rsem-prepare-reference --num-threads 4 --gtf Homo_sapiens.GRCh38.95.gtf Homo_sapiens.GRCh38.dna.primary_assembly.fa RSEM_reference/RSEM_reference```  
 - 発現量定量  
