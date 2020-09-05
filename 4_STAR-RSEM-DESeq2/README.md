@@ -30,7 +30,7 @@
   - インデックス保存用のディレクトリを作成  
     - ```mkdir ~/Documents/expression/ref/RSEM_reference```  
     - 下記コマンドの誤りをご指摘いただきましたので修正いたします。  
-    - ~~cd ~/Documents/expression/ref/RSEM_reference~~  
+    ~~cd /Documents/expression/ref/RSEM_reference~~  
     - ```cd ~/Documents/expression/ref```  
   - インデックス作成  
   - rsem-prepare-referenceのPATHに誤りがありましたので修正します。  
