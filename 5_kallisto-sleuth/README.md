@@ -1,6 +1,6 @@
 # kallisto、sleuthを用いた処理  
 ## kallisto  
-- kallisto用のインデックス作成    
+- kallisto用のインデックス作成（下記の「--index」部分を「-i」にしないと動かない場合があるので、エラーが出た場合はお試しください）  
   - ```kallisto index --index=~/Documents/expression/ref/kallisto.idx ~/Documents/expression/ref/Homo_sapiens.GRCh38.cdna.all.fa.gz```  
   - 完了すると~/Documents/expression/ref ディレクトリ内に kallisto.idx というインデックスファイルが作成される。  
 - kallisto [公式ページ](https://github.com/pachterlab/kallisto-transcriptome-indices/releases)からインデックスファイルをダウンロードした場合は下記のコマンドで解凍  
@@ -11,14 +11,15 @@
   - ```cd ~/Documents/expression/kallisto```  
   - 転写産物の定量（コマンド例）  
   - ```kallisto quant --index=../ref/kallisto.idx --output-dir=SRR******* --bootstrap-samples=100 --threads=2 ../seq/SRR*******_1.fastq.gz ../seq/SRR*******_2.fastq.gz```  
-    - --index でインデックスファイルを指定  
+    - --index でインデックスファイルを指定（-i と入力しないと動かない場合があります）  
     - インデックスファイルの名前は必要に応じて変更  
     - --output-dir では出力先のディレクトリ名を指定（あらかじめディレクトリを準備する必要はない）  
     - --bootstrap-samples は転写産物の推定値の信頼性を評価するためのブートストラップサンプリングの回数を指定  
     - --threadsはスレッド数を指定  
     - --pseudobamオプションを付けるとpseudoalignmentの結果をBAMファイルとして保存することができ、別の解析ソフトに読み込ませることが可能になる  
-  - 多サンプル処理する場合は下記のようにするとコマンド入力のミスを少なくできる
-    - ```cat ../seq/run_ids | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished```  
+  - 多サンプル処理する場合は下記のようにするとコマンド入力のミスを少なくできる（下記コマンドの「run_ids」は、現在SRAからダウンロードすると「SRR_Acc_list.txt」というファイル名になります。修正しました。また「--index」を「-i」にしないと動かない場合もあります）
+    ~~cat ../seq/run_ids | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished~~  
+    - ```cat ../seq/SRR_Acc_list.txt | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished```  
     - 最後に finished と表示されれば終了  
   - 全サンプルの出力結果を確認するためには以下のコマンドを実行する  
     - ```find ~/Documents/expression/kallisto -type f```  
@@ -47,6 +48,9 @@
   - ```devtools::install_github("pachterlab/sleuth")```  
 - sleuthパッケージの読み込み  
   - ```library("sleuth")```  
+- gridExtraパッケージのインストール・読み込み（20200906追記）  
+  - ```install.packages("gridExtra")```
+  - ```library(gridExtra)```
 - サンプル情報を読み込む（読み込むテキストファイルの名前が誤っていました）  
   - ~~```s2c <- read.table("sample.txt", header=T, stringsAsFactors=F, sep="\t")```~~  
   - ```s2c <- read.table("sample2condition.txt", header=T, stringsAsFactors=F, sep="\t")```  
