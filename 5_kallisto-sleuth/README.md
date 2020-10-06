@@ -17,9 +17,9 @@
     - --bootstrap-samples は転写産物の推定値の信頼性を評価するためのブートストラップサンプリングの回数を指定  
     - --threadsはスレッド数を指定  
     - --pseudobamオプションを付けるとpseudoalignmentの結果をBAMファイルとして保存することができ、別の解析ソフトに読み込ませることが可能になる  
-  - 多サンプル処理する場合は下記のようにするとコマンド入力のミスを少なくできる（下記コマンドの「run_ids」は、現在SRAからダウンロードすると「SRR_Acc_list.txt」というファイル名になります。修正しました。また「--index」を「-i」にしないと動かない場合もあります）
+  - 多サンプル処理する場合は下記のようにするとコマンド入力のミスを少なくできる（下記コマンドの「run_ids」は、現在SRAからダウンロードすると「SRR_Acc_List.txt」というファイル名になります。修正しました。また「--index」を「-i」にしないと動かない場合もあります）
     ~~cat ../seq/run_ids | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished~~  
-    - ```cat ../seq/SRR_Acc_list.txt | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished```  
+    - ```cat ../seq/SRR_Acc_List.txt | while read sample; do echo processing ${sample}; kallisto quant --index=../ref/kallisto.idx --output-dir=${sample} --bootstrap-samples=100 --threads=4 ../seq/${sample}_1.fastq.gz ../seq/${sample}_2.fastq.gz; done; echo finished```  
     - 最後に finished と表示されれば終了  
   - 全サンプルの出力結果を確認するためには以下のコマンドを実行する  
     - ```find ~/Documents/expression/kallisto -type f```  
@@ -29,7 +29,7 @@
 - サンプル情報が記載されたファイルを作成する
   - ```R```  
 ### 以下R環境下での作業  
-- ~~```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)```~~ 現在はダウンロードファイルの拡張子が .csv 無しに変わったようです。  
+- ~~```df <- read.csv("../seq/SraRunTable.txt.csv",stringsAsFactors=F)```~~ ダウンロードファイルの拡張子が .csv 無しになったようです。  
 - ```df <- read.csv("../seq/SraRunTable.txt",stringsAsFactors=F)```  
 - ~~```df2 <- data.frame(sample=df$Run, group=df$diseasestatus, path=df$Run)```~~ 誤りがありました。  
 - ```df2 <- data.frame(sample=df$Run, condition=df$diseasestatus, path=df$Run)```  
