@@ -1,5 +1,4 @@
 # kallisto、sleuthを用いた処理  
-## kallisto  
 - （20210210追記）sleuthでkallistoの出力結果を読み込む際にエラーが生じるようです。  
   - ```"sleuth" hdf5. file accessibilty. unable to open file```  
 - kallistoを動かす時点で警告が出ていましたので、kallisto側の問題かと思われます。  
@@ -7,7 +6,7 @@
   - ```# will be performed. Run quant with --plaintext option or recompile with```  
   - ```# HDF5 support to obtain bootstrap estimates.```
 - ネットでは解決策が見つけられなかったので、難しそうです。ひとまずcondaで独立した環境を用意し、その中で処理をすすめるのがよいかもしれません。[解決案](https://shallowbioinfomatics.blogspot.com/2021/02/sleuth-hdf5-file-accessibilty-unable-to.html)  
-  
+## kallisto  
 - kallisto用のインデックス作成（下記の「--index」部分を「-i」にしないと動かない場合があるので、エラーが出た場合はお試しください）  
   - ```kallisto index --index=~/Documents/expression/ref/kallisto.idx ~/Documents/expression/ref/Homo_sapiens.GRCh38.cdna.all.fa.gz```  
   - 完了すると~/Documents/expression/ref ディレクトリ内に kallisto.idx というインデックスファイルが作成される。  
