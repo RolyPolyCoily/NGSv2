@@ -10,4 +10,8 @@
  - ```ls -lh *fastq.gz```  
  - ```ls -lh *fastq.gz | wc -l```  
 - 上記で一部のファイルがダウンロードから漏れることがあるようです（[Twitter](https://twitter.com/takatoh1/status/1212744854045786120)）。その場合は抜けているファイルのID（例：SRR0000000）を個別に指定した上でfasterq-dumpを実行してください。  
- - ```fasterq-dump --split-files SRR0000000```
+ - ```fasterq-dump --split-files SRR0000000```  
+ - （20210818 追記）上記コマンドでは、実際にはまずSRAファイルがダウンロードされ、さらにFASTQへの変換が行われています。ダウンロードに失敗する際はSRAのダウンロードだけを最初に実施すると正常にダウンロードできることを教えていただきました（[コメント](https://github.com/RolyPolyCoily/NGSv2/issues/1#issue-546135298)）。  
+  - ```prefetch SRR000000```  
+ - その後別途FASTQへの変換を行います。  
+  - ```fasterq-dump SRR000000.sra```  
